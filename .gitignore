@@ -1,0 +1,53 @@
+# Reference material not intended for version control.
+/ref/
+
+# Local Codex/agent state.
+/.agents/
+/.codex/
+
+# Runtime outputs and large analysis products.
+*.root
+*.png
+*.pdf
+*.eps
+*.svg
+outputs/
+*/outputs/
+
+# ROOT ACLiC and compiled macro artifacts.
+*_C.d
+*_C.so
+*_C_ACLiC_dict*
+*_C_rdict.pcm
+*.pcm
+*.o
+*.so
+*.d
+
+# Batch and job logs.
+log/
+*/log/
+*.log
+*.out
+*.err
+job.out*
+job.err*
+job.log*
+*.stdout
+*.stderr
+dummy.cc
+
+# Temporary and editor files.
+*~
+*.swp
+*.swo
+.#*
+.DS_Store
+
+# Python cache from utility scripts.
+__pycache__/
+*.py[cod]
+
+# Condor scratch files that can appear beside submissions.
+*.sub~
+*.jdl~
