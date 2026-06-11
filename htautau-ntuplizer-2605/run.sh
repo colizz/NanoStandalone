@@ -26,6 +26,22 @@ cd ../..
 
 IFS='|' read -r -a INPUT_FILES <<< "$INPUT_FILE_LIST"
 
+FATJET_SELECTION_RULE="max_pt"
+case "$OUTPUT_EOS_PATH_FATJET" in
+    *htautau_pt200_file*.root)
+        FATJET_SELECTION_RULE="gen_matched"
+        ;;
+esac
+echo "FatJet object selection rule: ${FATJET_SELECTION_RULE}"
+
+BOOSTEDTAU_SELECTION_RULE="max_pt_higgs"
+case "$OUTPUT_EOS_PATH_BOOSTEDTAU" in
+    *htautau_pt200_file*.root)
+        BOOSTEDTAU_SELECTION_RULE="gen_matched"
+        ;;
+esac
+echo "BoostedTau object selection rule: ${BOOSTEDTAU_SELECTION_RULE}"
+
 FATJET_OUTPUTS=()
 BOOSTEDTAU_OUTPUTS=()
 
@@ -40,10 +56,8 @@ for i in "${!INPUT_FILES[@]}"; do
     echo "BoostedTau output: ${BOOSTEDTAU_OUTPUT}"
     echo "========================================="
 
-    root -l -b -q "$SCRIPT_DIR/nanoAOD_to_htautau_fatjet.C++(\"$INPUT_FILE\", \"$FATJET_OUTPUT\", \"max_pt\")"
-    root -l -b -q "$SCRIPT_DIR/nanoAOD_to_htautau_boostedTau.C++(\"$INPUT_FILE\", \"$BOOSTEDTAU_OUTPUT\", \"max_pt_higgs\")"
-    # root -l -b -q "$SCRIPT_DIR/nanoAOD_to_htautau_fatjet.C++(\"$INPUT_FILE\", \"$FATJET_OUTPUT\", \"gen_matched\")"
-    # root -l -b -q "$SCRIPT_DIR/nanoAOD_to_htautau_boostedTau.C++(\"$INPUT_FILE\", \"$BOOSTEDTAU_OUTPUT\", \"gen_matched\")"
+    root -l -b -q "$SCRIPT_DIR/nanoAOD_to_htautau_fatjet.C++(\"$INPUT_FILE\", \"$FATJET_OUTPUT\", \"$FATJET_SELECTION_RULE\")"
+    root -l -b -q "$SCRIPT_DIR/nanoAOD_to_htautau_boostedTau.C++(\"$INPUT_FILE\", \"$BOOSTEDTAU_OUTPUT\", \"$BOOSTEDTAU_SELECTION_RULE\")"
 
     FATJET_OUTPUTS+=("$FATJET_OUTPUT")
     BOOSTEDTAU_OUTPUTS+=("$BOOSTEDTAU_OUTPUT")

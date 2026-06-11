@@ -58,8 +58,8 @@
  *   - Gen: Higgs/tau four-vectors, decay labels, tau decay modes, visible tau
  *     decay modes, channel dR values, and signal/channel flags.
  *   - FatJet: selected raw pt/mass/soft-drop mass, eta, phi, dR to gen Higgs,
- *     GlobalParT3 scores and mass corrections, ParticleNet scores and mass
- *     corrections.
+ *     dR to nearest loose electron/muon, GlobalParT3 scores and mass
+ *     corrections, ParticleNet scores and mass corrections.
  *
  * Notes:
  *   - Stored AK8 pt, mass, and soft-drop mass are raw-corrected with
@@ -157,6 +157,7 @@ void nanoAOD_to_htautau_fatjet(const char* inputFile, const char* outputFile, co
     Int_t gen_tau1_decay = 0, gen_tau2_decay = 0, gen_tau1_vis_dm = -1, gen_tau2_vis_dm = -1;
     Int_t fatjet_gen_match = 0;
     Float_t fatjet_dr_gen_h = 99.f;
+    Float_t fatjet_dr_nearest_loose_electron = 99.f, fatjet_dr_nearest_loose_muon = 99.f;
     Float_t fj_pt = kMissing, fj_eta = kMissing, fj_phi = kMissing, fj_mass = kMissing, fj_sdmass = kMissing;
     Float_t gp_qcd = kMissing, gp_top_e = kMissing, gp_top_m = kMissing, gp_top_q = kMissing, gp_top_qq = kMissing, gp_top_tauh = kMissing;
     Float_t gp_xqq = kMissing, gp_xtauhe = kMissing, gp_xtauhh = kMissing, gp_xtauhm = kMissing, gp_mass_corr_generic = kMissing, gp_mass_corr_x2p = kMissing;
@@ -200,6 +201,8 @@ void nanoAOD_to_htautau_fatjet(const char* inputFile, const char* outputFile, co
     // Leading AK8 kinematics, raw masses, matching flag, and requested tagger scores.
     out->Branch("fatjet_gen_match", &fatjet_gen_match);
     out->Branch("fatjet_dr_gen_higgs", &fatjet_dr_gen_h);
+    out->Branch("fatjet_dr_nearest_loose_electron", &fatjet_dr_nearest_loose_electron);
+    out->Branch("fatjet_dr_nearest_loose_muon", &fatjet_dr_nearest_loose_muon);
     out->Branch("fatjet_raw_pt", &fj_pt);
     out->Branch("fatjet_eta", &fj_eta);
     out->Branch("fatjet_phi", &fj_phi);
@@ -339,6 +342,8 @@ void nanoAOD_to_htautau_fatjet(const char* inputFile, const char* outputFile, co
         // Reset AK8 payload. gen_matched events with no matched AK8 keep these dummy values.
         fatjet_gen_match = 0;
         fatjet_dr_gen_h = 99.f;
+        fatjet_dr_nearest_loose_electron = 99.f;
+        fatjet_dr_nearest_loose_muon = 99.f;
         fj_pt = fj_eta = fj_phi = fj_mass = fj_sdmass = kMissing;
         gp_qcd = gp_top_e = gp_top_m = gp_top_q = gp_top_qq = gp_top_tauh = kMissing;
         gp_xqq = gp_xtauhe = gp_xtauhh = gp_xtauhm = gp_mass_corr_generic = gp_mass_corr_x2p = kMissing;
@@ -356,6 +361,12 @@ void nanoAOD_to_htautau_fatjet(const char* inputFile, const char* outputFile, co
             fj.SetPtEtaPhiM(fj_pt, fj_eta, fj_phi, fj_mass);
             fatjet_dr_gen_h = gh.hasHiggs ? deltaR(fj, gh.higgs.p4()) : 99.f;
             fatjet_gen_match = (gh.hasHiggs && fatjet_dr_gen_h < 0.8f) ? 1 : 0;
+            for (const auto& ele : eles) {
+                fatjet_dr_nearest_loose_electron = std::min(fatjet_dr_nearest_loose_electron, deltaR(fj, ele.p4()));
+            }
+            for (const auto& mu : mus) {
+                fatjet_dr_nearest_loose_muon = std::min(fatjet_dr_nearest_loose_muon, deltaR(fj, mu.p4()));
+            }
 
             // Copy the selected AK8 GlobalParT3 and ParticleNet scores.
             gp_qcd = fat.globalParT3_QCD[lead];
