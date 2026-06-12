@@ -13,6 +13,7 @@
 *.svg
 outputs/
 */outputs/
+CMSSW_*/
 
 # ROOT ACLiC and compiled macro artifacts.
 *_C.d

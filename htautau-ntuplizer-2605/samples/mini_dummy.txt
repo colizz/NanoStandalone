@@ -1,0 +1,1 @@
+/eos/cms/store/cmst3/group/vhcc/sfTuples/ext/GluGluH-Hto2Tau_Bin-PT-200_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-pythia8/24MiniAODv6/miniv6_5453449-1850.root htautau_pt200_file0
