@@ -1,7 +1,7 @@
 Universe = vanilla
 Executable = run.sh
 EOSDIR = root://eoscms.cern.ch//store/cmst3/group/vhcc/sfTuples/trees_sf/20260927_NanoV15_standalone_cmsdas_bbvv_ntuples
-Arguments = $(input_file) $(EOSDIR)/ntuple_$(output_file).root
+Arguments = $(input_file) $(EOSDIR)/ntuple_hhbbvv_$(Cluster)_$(Process).root
 request_cpus = 1
 request_memory = 2000
 use_x509userproxy = true
@@ -14,4 +14,4 @@ when_to_transfer_output = ON_SUCCESS
 success_exit_code = 0
 transfer_input_files = nanoAOD_to_cmsdas_bbvv.C
 transfer_output_files = dummy.cc
-Queue input_file, output_file from samples/hhbbvv.txt
+Queue input_file from samples/hhbbvv.txt

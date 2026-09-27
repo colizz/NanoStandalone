@@ -5,21 +5,19 @@ The layout and worker workflow follow `htautau-ntuplizer-2605`: the macro and
 
 ## Input lists and submission
 
-Prepare `samples/hhbbvv.txt` and `samples/ttbar.txt` manually from the original
-one-path-per-line lists (`hhbbvvfl.txt` and `ttbarfl.txt`). Each submission row
-contains two whitespace-separated fields: a list of input paths joined by `|`,
-and a unique output identifier. A row may contain one file or several files.
-For example:
+Use `samples/hhbbvv.txt` and `samples/ttbar.txt` as single-column input lists,
+with one NanoAOD path per line. For example:
 
 ```text
-/store/.../file1.root|/store/.../file2.root hhbbvv_file0
-/store/.../file3.root hhbbvv_file1
+/store/.../file1.root
+/store/.../file2.root
 ```
 
-Use `ttbar_file0`, `ttbar_file1`, etc. for the background list. Full XRootD URLs
-are also supported. Do not include duplicate files, blank rows, or paths with
-whitespace. The actual input lists have not been supplied, so no production
-sample lists are included.
+Full XRootD URLs are also supported. Each row creates one job. A row may also
+contain multiple paths joined by `|`; the worker processes and merges that
+group. Do not add a second output-name column, duplicate files, or blank rows.
+Condor generates output names automatically using the sample name, Cluster,
+and Process identifiers.
 
 Run these commands from this directory with a valid X509 proxy:
 
@@ -42,15 +40,16 @@ Both JDL files use this output directory:
 root://eoscms.cern.ch//store/cmst3/group/vhcc/sfTuples/trees_sf/20260927_NanoV15_standalone_cmsdas_bbvv_ntuples
 ```
 
-Output names are `ntuple_hhbbvv_fileN.root` and `ntuple_ttbar_fileN.root`.
+Output names are `ntuple_hhbbvv_<Cluster>_<Process>.root` and
+`ntuple_ttbar_<Cluster>_<Process>.root`.
 Ensure that the destination directory exists and is writable before production.
 No remote directory was created and no remote upload was performed here.
 
 A successful upload creates `dummy.cc`; Condor returns this marker and the job
 logs. Failures return a nonzero exit code. As in the reference workflow,
-`xrdcp -f` overwrites an existing output with the same name. Use a separate
-`EOSDIR` for each production batch and merge only a complete set of successful
-jobs from that batch.
+`xrdcp -f` overwrites an existing output with the same name. A fresh submission gets a new Cluster identifier and new filenames. Merge only
+one successful output per input row; do not combine duplicate inputs across
+resubmitted batches. Use a separate `EOSDIR` for each production batch if needed.
 
 For `/store/...` inputs, the default redirector is
 `root://cms-xrd-global.cern.ch/`. Override it with `XROOTD_REDIRECTOR` if needed.
